@@ -1,0 +1,29 @@
+'''
+Created on 5 Jun 2013
+search for user input in a dictionary within dictionary.. 
+The first dictionary's Key equals the second dictionary's value to pull out the 3rd dictionary.
+
+@author: Glenn Pepper
+'''
+dict1 = {'key1': '1', 'key2' : '2', 'key3' : '3'} #this dictionary value references the second dictionary's key. 
+dict2 = {'1' : {'1' : 'choice1', '2' : 'choice2', '3' : 'choice3',  '4' : 'choice4'},
+         '2' : {'1' : 'choice5', '2' : 'choice6', '3' : 'choice7',  '4' : 'choice8'},
+         '3' : {'1' : 'choice9', '2' : 'choice10', '3' : 'choice11',  '4' : 'choice12'}} #dictionary within dictionary
+
+s = raw_input("Please make a choice:")
+
+if s in dict1:
+    print "You have picked", dict1[s]
+    dict1_pick = dict1[s]
+
+print dict1_pick
+
+
+# Loop through second dictionary looking for first dictionary derived from user input
+for i in dict2:
+    if i == dict1_pick:
+        dict2_Pick = dict2[i] #give new name to dictionary within dictionary value
+
+#print dictionary within dictionary of measures
+for i in dict2_Pick:
+    print i, dict2_Pick[i] # print value
