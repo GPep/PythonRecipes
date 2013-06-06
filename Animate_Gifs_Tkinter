@@ -1,0 +1,53 @@
+'''
+Created on 2 Jun 2013
+Tkinter doesn't support Animated Gifs so this is a simple program around this problem. 
+First you will need to separate the frames from the animated gif a place them all in a folder with 
+the naming convention 'filename-1, filename2, filename3' etc 
+@author: Glenn Pepper
+'''
+import cv2
+from Tkinter import *
+from PIL import Image
+import tkMessageBox
+
+
+root = Tk()
+root.title("Simple Animation Window")
+
+holder = Canvas(root)
+holder.pack(fill=X)
+
+holder.create_text(200,120, anchor=CENTER, text="ANIMATE!")
+            
+StaticFrame=[] #create empty
+
+#Importing the images. I have given them the naming convention tmp-0, tmp-1, etc - this will be imported into the list
+
+for i in range(0,6):
+    filename="FolderName\\tmp-"+str(i)+".gif"
+    StaticFrame+=[PhotoImage(file=filename)]
+
+
+print StaticFrame #Test
+
+def animation(currentframe):
+
+    def change_image():
+        
+        holder.create_image(0,0,anchor=NW,image=StaticFrame[currentframe], tag='Animate')
+        # Delete the current picture if one exists
+    holder.delete('Animate')
+    try:
+        change_image()
+    except IndexError:
+                # When you get to the end of the list of images - it simply resets itself back to zero and then we start again
+        currentframe = 0
+        change_image()
+    holder.update_idletasks() #Force redraw
+    currentframe = currentframe + 1
+        # Call loop again to keep the animation running in a continuous loop
+    root.after(75, animation, currentframe) 
+# Start the animation loop just after the Tkinter loop begins
+root.after(10, animation, 0)
+
+root.mainloop()  
