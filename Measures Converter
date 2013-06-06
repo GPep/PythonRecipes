@@ -1,0 +1,169 @@
+'''
+Created on 10 Apr 2013
+A Simple measure converter for different weights, lengths and temperatures with scope to add further options. 
+- This works on the Command Line and is a fairly good introduction to working with user input, dictionarys and handling errors
+@author: Glenn Pepper
+'''
+
+print "Welcome to my prototype measurement converter"
+
+
+
+#list of measurements for conversion
+measurements = {'1': 'Weight','2': 'Length', '3' : 'Temperature'}
+
+measures = {"Weight" : {'1':'Pounds','2':'Kilograms','3':'Ounces','4':'Stone'}, "Length" : 
+{'1': 'Miles', '2' : 'Kilometres','3' : 'Yards', '4' : 'Inches', '5' : 'Metres', '6' : 'Centimetres', '7' : 'Millimetres', '8' : 'Furlongs', '9' : 'Fathomss'}, "Temperature" : 
+{'1' : 'Celsius', '2' : 'Fahrenheit'}}
+
+#formulas
+formula_weight = { "Pounds" : {'Pounds' : 1, 'Kilograms' : 0.4536, 'Ounces' : 16, 'Stone' :  0.0714286}, "Kilograms" : {'Pounds' : 2.2046, 'Kilograms' : 1, 'Ounces' : 283.50, 'Stone' : 0.157473},
+"Ounces" : {'Pounds' : 0.0625, 'Kilograms' : 0.0283495, 'Ounces' : 1, 'Stone' : 0.00446429}, "stone" : {'Pounds' : 14, 'Kilograms' : 6.35029, 'Ounces' : 224, 'Stone' : 1}}
+
+formula_length = {"Miles" : {'Miles' : 1, 'Kilometres' : 1.60934, 'Yards' : 1760, 'Inches' : 63360, 'Metres' : 1609.34, 'Centimetres' : 160934, 'Millimetres' : 1609340, 'Furlongs' : 8, 'Fathoms' : 1 }, 
+'Kilometres' : {'Kilometres' : 1, 'Miles' : 0.621371, 'Furlongs' : 4.971, 'Fathoms' : 546.8, 'Yards' : 1093.61, 'Feet' : 3280.84, 'Inches' : 39370.1, 'Metres' : 1000,
+'Centimetres' : 100000, 'Millimetres' : 1000000}, 'Metres' : {'Metres' : '1', 'Kilometres' : 0.001, 'Centimetres' : 100,
+'Milimetres' : 1000, 'Feet' : 3.28084, 'Yards' : 1.09361, 'Inches' : 39.3701, 'Miles' : 0.000621371, 'Furlongs' : 0.004971, 'Fathoms' : 0.5468}, 'Centimetres' : {'Centimetres' : 1, 'Metres' : 0.01,
+'Milimetres' : 10, 'Kilometres' : 0.00001, 'Yards' : 0.0109361, 'Feet' : 0.0328084, 'Inches' : 0.393701, 'Miles' : 0.000006213712, 'Furlongs' : 0.00004971, 'Fathoms' : 0.005468},
+'Feet' : {'Inches' : 12, 'Yards' : 0.333333, 'Centimetres' : 30.48, 'Milimetres' : 304.8, 'Miles' : 0.000189394, 'Kilometres' : 0.0003048, 'Metres' : 0.3048, 'Feet' : 1, 'Furlongs' : 0.001515, 'Fathoms' : 0.1667 }, 
+'Inches' : {'Inches' : 1, 'Feet' : 0.0833333, 'Yards' : 0.0277778, 'Centimetres' : 2.54, 'Milimetres' : 25.4, 'Miles' : 0.00001578, 'Kilometres' : 0.0000254, 'Furlongs' : 0.0001263, 'Fathoms' : 0.01389}, 'Yards' : {'Yards' : 1, 'Inches' : 36, 'Feet' : 3,
+'Centimetres' : 91.44, 'Milimetres' : 914.4, 'Miles' : 0.0005682, 'Kilometres' : 0.0009144, 'Furlongs' : 0.004545, 'Fathoms' : 0.5},'Millimetres' : {'Inches' : 0.03937, 'Feet' : 0.003281, 'Yards' : 0.001094, 'Centimetres' : 0.1, 'Milimetres' : 1, 'Miles' : 0.0000006214, 'Kilometres' : 0.000001, 'Furlongs' : 0.000004971, 'Fathoms' : 0.0005468},
+'Furlongs' : {'Miles' : 0.125, 'Kilometres' : 0.2012, 'Yards' : 220, 'Inches' : 7920, 'Metres' : 201.2, 'Centimetres' : 20120, 'Millimetres' : 201200, 'Furlongs' : 1, 'Fathoms' : 110 }, 
+'Fathoms' : {'Miles' : 0.001136, 'Kilometres' : 0.001829, 'Yards' : 2, 'Inches' : 72, 'Metres' : 1.829, 'Centimetres' : 182.9, 'Millimetres' : 1829, 'Furlongs' : 0.009091, 'Fathoms' : 1 }}
+
+formula_temperature = { "Fahrenheit" : { 'Fahrenheit' : 1, 'Celsius' : 1}, 'Celsius' : {'Celsius' : 1, 'Fahrenheit' : 1}} 
+
+s="0"
+
+def start(s):
+
+    while True: #Check user entry is valid number
+
+        for i in measurements:
+            print i, "-", measurements[i]
+
+
+        s = raw_input("Please pick a type of measurement for conversion:")
+    
+        try:
+            if s in measurements:
+                print "You have picked", measurements[s]
+                measure_type = measurements[s]
+                break
+            else:
+                print "Please pick a number between", 1, "and", len(measurements) 
+        except ValueError:
+            print "Please pick a number between", 1, "and", len(measurements)
+
+
+
+#select dictionary within measures
+    for i in measures:
+        if i == measure_type:
+            firstPick = measures[i]
+
+#print dictionary within dictionary of measures
+    for i in firstPick:
+        print i, firstPick[i]
+
+
+    while True:
+
+        s1 = raw_input("Please pick a %s to convert:" %(measure_type))
+        try:
+            if s1 in firstPick:
+                print "You have picked", firstPick[s1]
+                second_pick = firstPick[s1]
+                break
+            else:
+                print "Please pick a number between", 1, "and", len(firstPick) 
+        except ValueError:
+            print "Please pick a number between", 1, "and", len(firstPick)
+
+
+    for i in firstPick:
+        print i, firstPick[i]
+
+    while True:
+
+        s2 = raw_input("Please pick a %s to convert %s to:" %(measure_type,firstPick[s1]))
+        try:
+            if s2 in firstPick:
+                print "You have picked", firstPick[s2]
+                third_pick = firstPick[s2]
+                break
+            else:
+                print "Please pick a number between", 1, "and", len(firstPick) 
+        except ValueError:
+            print "Please pick a number between", 1, "and", len(firstPick)
+
+    
+
+    if  measure_type == 'Weight':
+        formula = formula_weight
+    elif measure_type == 'Length':
+        formula = formula_length
+    else:
+        formula = formula_temperature
+
+    for i in formula:
+        if i == second_pick:
+            form_pick = formula[i]
+
+    for i in form_pick:
+        if i == third_pick:
+            convert_pick = form_pick[i]
+
+
+#function to convert pounds to kilograms
+    def convert(s):
+        if formula == formula_temperature:
+            if second_pick == 'Celsius':
+                
+                return float(s) * 9/5 + 32
+            else:
+                return (float(s) - 32) * 5/9 
+        else:
+            return float(s) * convert_pick
+    
+    s = "0"
+
+#user input
+
+    def check_input(s):   
+        while True:
+        
+            s = raw_input("Please enter amount in %s to convert into %s:" %(firstPick[s1],firstPick[s2]))
+    
+            try:
+                s = float(s) #user entry is a number
+                if float(s) > 0 and second_pick != 'Celsius': #user entry is greater than zero
+                    print s, "%s is equal to" %(firstPick[s1]), convert(s), "%s" %(firstPick[s2])
+                    break
+                elif second_pick == 'Celsius':
+                    print s, "%s is equal to" %(firstPick[s1]), convert(s), "%s" %(firstPick[s2])
+                    break
+                else: 
+                    print "please enter amount greater than 0!"
+            except ValueError:
+                print "You have not entered a number, please try again:"
+
+    check_input(s)
+
+    choice = "0"
+
+    while True: #while operator to see if user wants to convert more amounts of if they want to exit.
+
+        choice = raw_input("Would you like to convert another amount? (Y/N). Please type in 'r' to choose a different measurement to convert:")
+        if choice == "Y" or choice == "y":
+            check_input(s)
+        elif choice == "r" or choice == "R":
+            start(s)
+    
+        elif choice == "n" or choice == "N":
+            print "Thank you for using this conversion tool"
+            break
+        else:
+            print "Sorry, I didn't understand your answer. please enter y for yes or n for no."
+            
+start(s)
