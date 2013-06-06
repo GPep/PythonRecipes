@@ -1,0 +1,293 @@
+'''
+Created on 01 May 2013
+A Simple measure converter for different weights, lengths and temperatures with scope to add further options. 
+This also uses a Tkinter GUI with option menus and shows good examples of using a GUI, Dictionaries and how to 
+handle errors
+@author: Glenn Pepper
+'''
+
+
+
+from Tkinter import *
+import tkMessageBox
+# first optionmenu dictionary
+measurements = {'1': 'Weight','2': 'Length', '3' : 'Temperature'}
+
+#Dictionary for convert_from optionmenu
+
+measures = {"Weight" : {'1':'Pounds','2':'Kilograms','3':'Ounces','4':'Stone'}, "Length" : 
+{'1': 'Miles', '2' : 'Kilometres','3' : 'Yards', '4' : 'Inches', '5' : 'Metres', '6' : 'Centimetres', '7' : 'Millimetres', '8' : 'Furlongs', '9' : 'Fathoms'}, "Temperature" : 
+{'1' : 'Celsius', '2' : 'Fahrenheit'}}
+
+#formulas and also dictionaries for convert_to option menu
+
+formula_weight = { "Pounds" : {'Kilograms' : 0.4536, 'Ounces' : 16, 'Stone' :  0.0714286}, "Kilograms" : {'Pounds' : 2.2046, 'Ounces' : 283.50, 'Stone' : 0.157473},
+"Ounces" : {'Pounds' : 0.0625, 'Kilograms' : 0.0283495, 'Stone' : 0.00446429}, "stone" : {'Pounds' : 14, 'Kilograms' : 6.35029, 'Ounces' : 224,}}
+
+formula_length = {"Miles" : {'Kilometres' : 1.60934, 'Yards' : 1760, 'Inches' : 63360, 'Metres' : 1609.34, 'Centimetres' : 160934, 'Millimetres' : 1609340, 'Furlongs' : 8, 'Fathoms' : 1 }, 
+'Kilometres' : {'Miles' : 0.621371, 'Furlongs' : 4.971, 'Fathoms' : 546.8, 'Yards' : 1093.61, 'Feet' : 3280.84, 'Inches' : 39370.1, 'Metres' : 1000,
+'Centimetres' : 100000, 'Millimetres' : 1000000}, 'Metres' : {'Kilometres' : 0.001, 'Centimetres' : 100,
+'Milimetres' : 1000, 'Feet' : 3.28084, 'Yards' : 1.09361, 'Inches' : 39.3701, 'Miles' : 0.000621371, 'Furlongs' : 0.004971, 'Fathoms' : 0.5468}, 'Centimetres' : {'Metres' : 0.01,
+'Milimetres' : 10, 'Kilometres' : 0.00001, 'Yards' : 0.0109361, 'Feet' : 0.0328084, 'Inches' : 0.393701, 'Miles' : 0.000006213712, 'Furlongs' : 0.00004971, 'Fathoms' : 0.005468},
+'Feet' : {'Inches' : 12, 'Yards' : 0.333333, 'Centimetres' : 30.48, 'Milimetres' : 304.8, 'Miles' : 0.000189394, 'Kilometres' : 0.0003048, 'Metres' : 0.3048, 'Furlongs' : 0.001515, 'Fathoms' : 0.1667 }, 
+'Inches' : {'Feet' : 0.0833333, 'Yards' : 0.0277778, 'Centimetres' : 2.54, 'Milimetres' : 25.4, 'Miles' : 0.00001578, 'Kilometres' : 0.0000254, 'Furlongs' : 0.0001263, 'Fathoms' : 0.01389}, 'Yards' : {'Inches' : 36, 'Feet' : 3,
+'Centimetres' : 91.44, 'Milimetres' : 914.4, 'Miles' : 0.0005682, 'Kilometres' : 0.0009144, 'Furlongs' : 0.004545, 'Fathoms' : 0.5},'Millimetres' : {'Inches' : 0.03937, 'Feet' : 0.003281, 'Yards' : 0.001094, 'Centimetres' : 0.1,'Miles' : 0.0000006214, 'Kilometres' : 0.000001, 'Furlongs' : 0.000004971, 'Fathoms' : 0.0005468},
+'Furlongs' : {'Miles' : 0.125, 'Kilometres' : 0.2012, 'Yards' : 220, 'Inches' : 7920, 'Metres' : 201.2, 'Centimetres' : 20120, 'Millimetres' : 201200, 'Fathoms' : 110 }, 
+'Fathoms' : {'Miles' : 0.001136, 'Kilometres' : 0.001829, 'Yards' : 2, 'Inches' : 72, 'Metres' : 1.829, 'Centimetres' : 182.9, 'Millimetres' : 1829, 'Furlongs' : 0.009091, }}
+
+formula_temperature = { "Fahrenheit" : {'Celsius' : 1}, 'Celsius' : {'Fahrenheit' : 1}} 
+
+
+
+
+class App(Frame):
+    
+    def __init__(self, master):
+        Frame.__init__(self, master) 
+        self.frame = Frame(master, bg='gray88')
+        self.master = master
+        self.frame.grid()
+        self.initUI()
+        self.createMenu()
+        
+
+    def createMenu(self):
+  
+    
+        self.userEntry = Entry(self.frame)
+        self.userEntry.grid(row=3, column=1)
+        self.userEntry.config(width=30)
+        self.convertIt = Button(self.frame, text="Convert", highlightcolor='black', command=self.checkInput, bg='gray60')
+        self.convertIt.grid(row=3, column=3, sticky=EW)
+        self.convertIt.config(width=20)
+        self.displayAnswer = StringVar(self.frame)
+        self.displayAnswer.set("Answer")
+        self.answer = Label(self.frame,textvariable=self.displayAnswer, bg='gray99', fg="Green")
+        self.answer.grid(row=3, column=5, sticky=E,padx=10,pady=2)
+        self.answer.config(width=30)
+        
+        
+        
+
+
+        
+        # create a toolbar
+        
+
+
+        self.b = Button(self.frame, text="Reset",bg='gray66', command=restart)
+        self.b.grid(row=4,column=5,)
+        self.b.config(width=10)
+      
+        self.b = Button(self.frame, text="Quit",bg='gray66', fg="red", command=callback)
+        self.b.grid(row=4, column=5,sticky=E)
+        self.b.config(width=10)
+        
+
+
+
+        
+        
+        # create a menu
+        self.menu = Menu(root)
+        root.config(menu=self.menu)
+
+        self.filemenu = Menu(self.menu)
+        self.menu.add_cascade(label="File", menu=self.filemenu)
+        self.filemenu.add_command(label="New", command=generic)
+        self.filemenu.add_command(label="Open...", command=generic)
+        self.filemenu.add_separator()
+        self.filemenu.add_command(label="Exit", command=callback)
+
+        self.helpmenu = Menu(self.menu)
+        self.menu.add_cascade(label="Help", menu=self.helpmenu)
+        self.helpmenu.add_command(label="About...", command=about)
+
+
+    def initUI(self):
+        
+   
+        
+        self.varMeasure = StringVar(self.frame)
+        self.varMeasure.set("Select Measure")
+        
+        self.measure_pick = OptionMenu(self.frame, self.varMeasure, *measurements.values(), command=self.select)
+        self.measure_pick.grid(row=1, column=3, columnspan=2, sticky=EW)
+        self.measure_pick.config(width=20)
+        
+
+        
+        self.firstPick = {1 : "Convert From"}
+        self.varMeasurePick = StringVar(self.master)
+        self.varMeasurePick.set("Convert From")
+
+        self.Convert_From = OptionMenu(self.frame, self.varMeasurePick,*self.firstPick.values())
+        self.Convert_From.grid(row=2, column=1)
+        self.Convert_From.config(state = DISABLED)
+        self.Convert_From.config(width=30)
+        self.SecondPick = {1 : "Convert To"}
+        self.varMeasureConvert = StringVar(self.master)
+        self.varMeasureConvert.set("Convert To")
+        
+        self.Convert_To = OptionMenu(self.frame, self.varMeasureConvert, *self.SecondPick.values())
+        self.Convert_To.grid(row=2,column=5)
+        self.Convert_To.config(state = DISABLED)
+        self.Convert_To.config(width=30)
+        
+
+        
+
+
+    
+
+    def select(self, choice):
+
+        choice = self.varMeasure.get()
+        if choice in measurements.values():
+                
+            self.measure_type = choice
+            self.firstPick = measures[self.measure_type]
+                
+            self.Convert_From.destroy()
+            self.Convert_To.destroy()
+            self.varMeasurePick.set("Please Select %s" %(choice))
+            self.Convert_From = OptionMenu(self.frame, self.varMeasurePick, *self.firstPick.values(), command=self.selectFrom)
+            self.Convert_From.grid(row=2, column=1)
+            self.Convert_From.config(width=30)
+                
+            self.secondPick = {1 : "Convert To"}
+            self.varMeasureConvert.set("Select %s to Convert First" %(choice))
+            self.Convert_To = OptionMenu(self.frame, self.varMeasureConvert, *self.secondPick.values())
+            self.Convert_To.grid(row=2,column=5)
+            self.Convert_To.config(state = DISABLED)
+            self.Convert_To.config(width=30)    
+
+    def selectFrom(self,choice):
+
+        choice = self.varMeasurePick.get()
+        if self.measure_type == 'Weight':
+            self.formula = formula_weight
+        elif self.measure_type == 'Length':
+            self.formula = formula_length
+        else:
+            self.formula = formula_temperature
+        if choice in self.formula:
+            self.convertFrom = choice
+            self.thirdPick = self.formula[self.convertFrom]
+                
+            self.Convert_To.destroy()
+            self.varMeasureConvert.set("Select %s to Convert to" %(self.measure_type))
+            self.Convert_To = OptionMenu(self.frame, self.varMeasureConvert, *self.thirdPick.keys())
+            self.Convert_To.grid(row=2,column=5)
+            self.Convert_To.config(width=30)   
+
+    def checkInput(self): #check value entered is a number
+
+        self.convertTo = self.varMeasureConvert.get()
+        self.userEnter = self.userEntry.get()
+        self.convertPick = self.thirdPick[self.convertTo]
+           
+        while True:
+            try:
+                s = float(self.userEnter)
+                if s > 0 and self.convertFrom != 'Celsius':
+                    self.convert()
+                    break
+                elif self.convertFrom == 'Celsius': #this allows amount under zero
+                    self.convert()
+                    break
+                else:
+                    message="Error!"
+                    self.displayAnswer.set(message)
+                    self.answer.config(fg="red")
+                    errorZero()
+                    break
+                    
+            except ValueError:
+                message="Error!"
+                self.displayAnswer.set(message)
+                self.answer.config(fg="red")
+                errorNum()
+                break           
+                
+
+    def convert(self): #Main calculation
+            
+        
+        if self.formula == formula_temperature:
+            if self.convertFrom == 'Celsius': 
+                self.convertNum = float(self.userEnter) * 9/5 + 32
+                message = "%s %s is equal to " %(self.userEnter,self.convertFrom) + str(self.convertNum) + " %s" %(self.convertTo)
+                self.displayAnswer.set(message)
+                self.answer.config(fg="green")
+                    #print "%s %s is equal to" %(userEntry,convertFrom), convert, "%s" %(convertTo)
+               
+            else:
+                convertNum = (float(self.userEnter) - 32) * 5/9
+                message = "%s %s is equal to " %(self.userEnter,self.convertFrom) + str(convertNum) + " %s" %(self.convertTo)
+                self.displayAnswer.set(message)
+                self.answer.config(fg="green")
+                    #print "%s %s is equal to" %(userEntry,convertFrom), convert, "%s" %(convertTo)
+                
+        else:
+            convertNum = float(self.userEnter) * self.convertPick
+            message = "%s %s is equal to " %(self.userEnter,self.convertFrom) + str(convertNum) + " %s" %(self.convertTo)
+            self.displayAnswer.set(message)
+            self.answer.config(fg="green")
+                #print "%s %s is equal to" %(userEntry,convertFrom), convert, "%s" %(convertTo)                      
+                
+              
+
+def callback():
+        if tkMessageBox.askokcancel("Quit", "Do you really wish to quit?"):
+            root.destroy()
+def about():
+    def aboutClose():
+        about.destroy()
+    about = Toplevel(bg='gray88')
+    #aboutContent = StringVar(about)
+    photo= PhotoImage(file='ufcbadge.gif')
+    aboutContent="A Simple Measure Converter by Untitled Fruit Company - Version 1.0"
+    imageLabel = Label(about, image=photo)
+    imageLabel.grid(row=1, column=1)
+    contentLabel = Text(about, bg='gray80')
+    contentLabel.insert(1.0, aboutContent)
+    contentLabel.config(wrap=WORD, width=25,height=5, state=DISABLED)
+    contentLabel.grid(row=1, column=2)
+    #contentLabel.config(width=60)
+    aboutOK = Button(about, text="OK",bg='gray66', command=aboutClose)
+    aboutOK.grid(row=2,column=2,)
+    aboutOK.config(width=10)
+    about.mainloop()
+    
+        #tkMessageBox.showinfo("about", "The Untitled Fruit Company Measure Converter - Version 1.0")
+        
+def generic():
+        tkMessageBox.showinfo("generic window", "This doesn't do anything yet, it is just an example")
+
+def restart():
+
+    app.measure_pick.destroy()
+    
+    app.Convert_From.destroy()
+    app.Convert_To.destroy()
+    
+    app.initUI()
+    app.displayAnswer.set("Answer")
+ 
+   
+        
+def errorZero():
+    tkMessageBox.showerror("Error!", "Please enter amount greater than 0!")
+
+
+def errorNum():
+    tkMessageBox.showerror("Error!", "Please enter a valid number!")
+
+
+if __name__ == '__main__':
+    root = Tk()
+    root.title("Measure Converter")
+    app = App(root)
+    root.protocol("WM_DELETE_WINDOW", callback) #call a function 'Do you really want to quit?'
+    root.mainloop() 
