@@ -1,0 +1,50 @@
+'''
+Created on 5 Jun 2013
+A simple program that continually re-sizes the background image in a Tkinter Canvas
+@author: Glenn Pepper
+'''
+
+from Tkinter import *
+from PIL import Image, ImageTk
+
+class CanvasApp(Frame):
+    def __init__(self, master):
+
+
+
+        self.frame = Frame(root,bg='gray88')
+        self.frame.config(width=300,height=240)
+        self.frame.pack(fill=BOTH, expand=YES)
+        self.i = 'tmp-1.gif'
+
+        self.holder = Canvas(self.frame)
+        self.holder.pack(fill=BOTH, expand=YES)
+        
+
+
+
+
+
+    def resize_image(self,i):
+        def check_size():
+
+            w = self.holder.winfo_width() #get canvas width
+            h = self.holder.winfo_height()
+            self.i2 =  Image.open(self.i)#get canvas height               
+            self.i2 = self.i2.resize((w,h), Image.NEAREST) #resize picture based on canvas size
+            self.reFrame = ImageTk.PhotoImage(image=self.i2)
+            self.holder.image = self.reFrame
+            self.holder.delete('resize')
+   
+        check_size()
+        self.holder.create_image(0,0,anchor=NW,image=self.reFrame, tag='resize')
+        self.holder.update_idletasks()
+    # End of image list reached, start over at the first image - works for an arbitrary number of images
+        root.after(10, self.resize_image,self.i )     
+    
+if __name__ == '__main__':   
+    root = Tk()    
+    app = CanvasApp(root)
+    root.title("Image Viewer")
+    root.after(10, app.resize_image,app.i)
+    root.mainloop()
